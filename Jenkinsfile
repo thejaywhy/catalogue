@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    tools {
-      go 'go-1.13.4'
-    }
-
     environment {
       // We use localhost:5000 to tell docker to use a local registry
       appImageName = "localhost:5000/catalogue"
@@ -15,7 +11,8 @@ pipeline {
         stage('docker-build-app') {
             steps {
                 script {
-                    def newImages = docker.build(appImageName + ":$BUILD_NUMBER", "./docker/catalogue")
+                    def dockerfile = "./docker/catalogue/Dockerfile"
+                    def newImages = docker.build(appImageName + ":$BUILD_NUMBER", "-f ${dockerfile} .")
                     newImages.push()
                     newImages.push('latest')
                 }
@@ -24,7 +21,8 @@ pipeline {
         stage('docker-build-db') {
             steps {
                 script {
-                    def newImages = docker.build(dbImageName + ":$BUILD_NUMBER", "./docker/catalogue-db")
+                    def dockerfile = "./docker/catalogue-db/Dockerfile"
+                    def newImages = docker.build(dbImageName + ":$BUILD_NUMBER", "-f ${dockerfile} .")
                     newImages.push()
                     newImages.push('latest')
                 }
