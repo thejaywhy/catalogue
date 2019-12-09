@@ -14,9 +14,11 @@ pipeline {
     stages {
         stage('docker-build-app') {
             steps {
-                def newImages = docker.build(appImageName + ":$BUILD_NUMBER", "./docker/catalogue")
-                newImages.push()
-                newImages.push('latest')
+                script {
+                    def newImages = docker.build(appImageName + ":$BUILD_NUMBER", "./docker/catalogue")
+                    newImages.push()
+                    newImages.push('latest')
+                }
             }
         }
         stage('docker-build-db') {
